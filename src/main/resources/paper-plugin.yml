@@ -1,0 +1,10 @@
+name: Luneth
+version: '1.0.0'
+main: rs.jamie.luneth.LunethPlugin
+api-version: '1.19'
+prefix: Luneth
+load: STARTUP
+authors: [ Summiner ]
+description: desc
+website: https://jamie.rs
+loader: rs.jamie.luneth.PluginLoader

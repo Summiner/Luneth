@@ -1,0 +1,9 @@
+name: Solara
+version: '1.0.0'
+main: rs.jamie.solara.Solara
+api-version: '1.21'
+prefix: StaffUtils
+load: STARTUP
+authors: [ Summiner ]
+description: Minecraft library that makes obtaining a player's head texture incredibly simple
+website: https://jamie.rs

@@ -1,0 +1,91 @@
+2025-05-31 22:33:39.031029-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "LUNETHTESTOBJECT" not found (this database is empty); SQL statement:
+INSERT INTO LunethTestObject (key, value) VALUES (?, ?) [42104-232]
+2025-05-31 22:33:39.042053-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT [*]value FROM LunethTestObject WHERE key = ?"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM LunethTestObject WHERE key = ? [42001-232]
+2025-05-31 22:33:49.183933-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "LUNETHTESTOBJECT" not found (this database is empty); SQL statement:
+INSERT INTO LunethTestObject (key, value) VALUES (?, ?) [42104-232]
+2025-05-31 22:33:49.196660-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT [*]value FROM LunethTestObject WHERE key = ?"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM LunethTestObject WHERE key = ? [42001-232]
+2025-05-31 22:35:37.647373-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "LUNETHTESTOBJECT" not found (this database is empty); SQL statement:
+INSERT INTO LunethTestObject (key, value) VALUES (?, ?) [42104-232]
+2025-05-31 22:35:37.657812-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT [*]value FROM LunethTestObject WHERE key = ?"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM LunethTestObject WHERE key = ? [42001-232]
+2025-05-31 22:37:01.384511-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT [*]value FROM LunethTestObject WHERE key = ?"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM LunethTestObject WHERE key = ? [42001-232]
+2025-05-31 22:37:47.591131-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT [*]value FROM LunethTestObject WHERE key = ?"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM LunethTestObject WHERE key = ? [42001-232]
+2025-05-31 22:54:04.211690-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE TABLE IF NOT EXISTS LunethTestObject ([*]key BINARY PRIMARY KEY, value BINARY)"; expected "identifier"; SQL statement:
+CREATE TABLE IF NOT EXISTS LunethTestObject (key BINARY PRIMARY KEY, value BINARY) [42001-232]
+2025-05-31 22:55:52.269553-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE TABLE IF NOT EXISTS LunethTestObject (""key"" BINARY PRIMARY KEY, [*]value BINARY)"; expected "identifier"; SQL statement:
+CREATE TABLE IF NOT EXISTS LunethTestObject ("key" BINARY PRIMARY KEY, value BINARY) [42001-232]
+2025-05-31 22:56:44.806146-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE TABLE IF NOT EXISTS LunethTestObject (""key"" BINARY PRIMARY KEY, [*]value BINARY)"; expected "identifier"; SQL statement:
+CREATE TABLE IF NOT EXISTS LunethTestObject ("key" BINARY PRIMARY KEY, value BINARY) [42001-232]
+2025-05-31 22:58:01.380972-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE TABLE IF NOT EXISTS LunethTestObject (""key"" BINARY PRIMARY KEY, [*]value BINARY)"; expected "identifier"; SQL statement:
+CREATE TABLE IF NOT EXISTS LunethTestObject ("key" BINARY PRIMARY KEY, value BINARY) [42001-232]
+2025-05-31 22:58:44.195586-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE TABLE IF NOT EXISTS LunethTestObject (id BINARY PRIMARY KEY, [*]value BINARY)"; expected "identifier"; SQL statement:
+CREATE TABLE IF NOT EXISTS LunethTestObject (id BINARY PRIMARY KEY, value BINARY) [42001-232]
+2025-05-31 22:59:32.484832-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE TABLE IF NOT EXISTS LunethTestObject (""key"" BLOB PRIMARY KEY, [*]value BINARY)"; expected "identifier"; SQL statement:
+CREATE TABLE IF NOT EXISTS LunethTestObject ("key" BLOB PRIMARY KEY, value BINARY) [42001-232]
+2025-05-31 22:59:42.483428-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE TABLE IF NOT EXISTS LunethTestObject ([*]key BLOB PRIMARY KEY, value BINARY)"; expected "identifier"; SQL statement:
+CREATE TABLE IF NOT EXISTS LunethTestObject (key BLOB PRIMARY KEY, value BINARY) [42001-232]
+2025-05-31 22:59:55.654013-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE TABLE IF NOT EXISTS LunethTestObject (""key"" BLOB PRIMARY KEY, [*]value BINARY)"; expected "identifier"; SQL statement:
+CREATE TABLE IF NOT EXISTS LunethTestObject ("key" BLOB PRIMARY KEY, value BINARY) [42001-232]
+2025-05-31 23:00:45.782386-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLFeatureNotSupportedException: Feature not supported: "Index on column: ""key"" BINARY LARGE OBJECT NOT NULL"; SQL statement:
+CREATE TABLE IF NOT EXISTS LunethTestObject ("key" BLOB PRIMARY KEY, "value" BINARY) [50100-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:568)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.message.DbException.getUnsupportedException(DbException.java:287)
+	at org.h2.index.Index.checkIndexColumnTypes(Index.java:47)
+	at org.h2.mvstore.db.MVSecondaryIndex.<init>(MVSecondaryIndex.java:54)
+	at org.h2.mvstore.db.MVTable.addIndex(MVTable.java:362)
+	at org.h2.command.ddl.AlterTableAddConstraint.tryUpdate(AlterTableAddConstraint.java:149)
+	at org.h2.command.ddl.AlterTableAddConstraint.update(AlterTableAddConstraint.java:74)
+	at org.h2.command.ddl.AlterTable.update(AlterTable.java:46)
+	at org.h2.command.ddl.CommandWithColumns.createConstraints(CommandWithColumns.java:83)
+	at org.h2.command.ddl.CreateTable.update(CreateTable.java:134)
+	at org.h2.command.CommandContainer.update(CommandContainer.java:139)
+	at org.h2.command.Command.executeUpdate(Command.java:304)
+	at org.h2.command.Command.executeUpdate(Command.java:248)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:262)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:231)
+	at rs.jamie.lunethManager.modules.SQLModule.createTable(SQLModule.java:79)
+	at rs.jamie.luneth.LunethManager.Luneth.<init>(Luneth.java:22)
+	at rs.jamie.luneth.LunethManager.Luneth$Builder.build(Luneth.java:98)
+	at rs.jamie.lunethManager.Test.main(Test.java:9)
+2025-05-31 23:01:24.707825-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT [*]value FROM LunethTestObject WHERE key = ?"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM LunethTestObject WHERE key = ? [42001-232]
+2025-05-31 23:01:41.179060-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT [*]value FROM LunethTestObject WHERE key = ?"; expected "DISTINCT, ALL, *, INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+SELECT value FROM LunethTestObject WHERE key = ? [42001-232]
+2025-05-31 23:02:35.368134-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE TABLE IF NOT EXISTS LunethTestObject ([*]key BINARY(64) PRIMARY KEY, value BINARY(64))"; expected "identifier"; SQL statement:
+CREATE TABLE IF NOT EXISTS LunethTestObject (key BINARY(64) PRIMARY KEY, value BINARY(64)) [42001-232]
+2025-05-31 23:03:49.092527-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "key BINARY": "CAST(X'00000045' AS BINARY(4)) (4)"; SQL statement:
+INSERT INTO LunethTestObject ("key", "value") VALUES (?, ?) [22001-232]
+2025-05-31 23:04:22.195275-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "key BINARY": "CAST(X'00000045' AS BINARY(4)) (4)"; SQL statement:
+INSERT INTO LunethTestObject ("key", "value") VALUES (?, ?) [22001-232]
+2025-05-31 23:04:45.428692-05:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "key BINARY": "CAST(X'00000045' AS BINARY(4)) (4)"; SQL statement:
+INSERT INTO LunethTestObject ("key", "value") VALUES (?, ?) [22001-232]
