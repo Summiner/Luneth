@@ -6,6 +6,7 @@ import rs.jamie.luneth.modules.Module;
 import rs.jamie.luneth.modules.RedisModule;
 import rs.jamie.luneth.modules.SQLModule;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 
 public class LunethManager {
@@ -17,7 +18,11 @@ public class LunethManager {
     }
 
     public CompletableFuture<Object> getObject(StorageObject<?, ?> object) {
-        return CompletableFuture.supplyAsync(() -> object.decodeValue(module.getObject(object.encodeKey(), object.getIdentifier()).join()));
+        return CompletableFuture.supplyAsync(() -> {
+            ByteBuffer buffer = module.getObject(object.encodeKey(), object.getIdentifier()).join();
+            if(buffer==null) return null;
+            return object.decodeValue(buffer);
+        });
     }
 
     public CompletableFuture<Boolean> setObject(StorageObject<?, ?> object) {
