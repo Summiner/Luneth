@@ -42,7 +42,7 @@ public class RedisModule implements Module {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 if(cacheTime!=0) {
-                    redis.setex(addIdentifier(key, identifier), 1800, value).get();
+                    redis.setex(addIdentifier(key, identifier), cacheTime, value).get();
                 } else {
                     redis.set(addIdentifier(key, identifier), value);
                 }

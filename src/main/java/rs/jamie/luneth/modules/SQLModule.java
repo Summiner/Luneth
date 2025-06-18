@@ -7,11 +7,15 @@ import java.util.concurrent.CompletableFuture;
 
 public class SQLModule implements Module {
 
-    private static final Map<String, String> DRIVER_MAP = Map.of(
-            "h2", "org.h2.Driver",
-            "mariadb", "org.mariadb.jdbc.Driver",
-            "mysql", "com.mysql.cj.jdbc.Driver",
-            "sqlite", "org.sqlite.JDBC");
+    private static final Map<String, String> DRIVER_MAP = Map.ofEntries(
+            Map.entry("h2", "org.h2.Driver"),
+            Map.entry("mariadb", "org.mariadb.jdbc.Driver"),
+            Map.entry("mysql", "com.mysql.cj.jdbc.Driver"),
+            Map.entry("sqlite", "org.sqlite.JDBC"),
+            Map.entry("postgresql", "org.postgresql.Driver"),
+            Map.entry("oracle", "oracle.jdbc.OracleDriver"),
+            Map.entry("sqlserver", "com.microsoft.sqlserver.jdbc.SQLServerDriver")
+    );
 
     private final Connection conn ;
 
@@ -25,6 +29,12 @@ public class SQLModule implements Module {
             e.printStackTrace();
         }
         conn = c;
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                this.conn.close();
+            } catch (Exception ignored) {}
+        }));
     }
 
     private void registerDrivers(String jdbcUrl) throws ClassNotFoundException {
