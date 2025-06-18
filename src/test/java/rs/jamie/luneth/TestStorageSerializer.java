@@ -3,19 +3,12 @@ package rs.jamie.luneth;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-public class TestStorageObject implements StorageObject<Integer, String> {
+public class TestStorageSerializer implements StorageSerializer<Integer, String> {
 
-    private final Integer key;
-    private final String value;
+    LunethManager manager;
 
-    public TestStorageObject() {
-        this.key = null;
-        this.value = null;
-    }
-
-    public TestStorageObject(Integer key, String value) {
-        this.key = key;
-        this.value = value;
+    public TestStorageSerializer(LunethManager manager) {
+        this.manager = manager;
     }
 
     @Override
@@ -24,16 +17,14 @@ public class TestStorageObject implements StorageObject<Integer, String> {
     }
 
     @Override
-    public ByteBuffer encodeKey() {
-        if(key==null) return null;
+    public ByteBuffer encodeKey(Integer key) {
         ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
         buffer.putInt(key);
         return buffer.flip();
     }
 
     @Override
-    public ByteBuffer encodeValue() {
-        if(value==null) return null;
+    public ByteBuffer encodeValue(String value) {
         byte[] val = value.getBytes(StandardCharsets.UTF_8);
         int size = val.length;
         ByteBuffer buffer = ByteBuffer.allocate(size + Integer.BYTES);

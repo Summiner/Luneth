@@ -29,7 +29,8 @@ public class CaffeineModule implements Module {
         if (!identifier.matches("[a-zA-Z0-9_]+")) {
             throw new IllegalArgumentException("Invalid table name: " + identifier);
         }
-        return cache.getIfPresent(addIdentifier(key, identifier));
+        CompletableFuture<ByteBuffer> buffer = cache.getIfPresent(addIdentifier(key, identifier));
+        return buffer!=null?buffer:CompletableFuture.completedFuture(null);
     }
 
     @Override

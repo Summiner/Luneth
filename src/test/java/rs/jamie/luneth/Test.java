@@ -3,14 +3,13 @@ package rs.jamie.luneth;
 public class Test {
 
     public static void main(String[] args) {
-        LunethManager lunethManager = new LunethManager.Builder()
-                .setStorageMode(LunethManager.StorageModes.SQL)
-                .setConnectionURL("jdbc:h2:D:/Code/Luneth/build/storage")
+        LunethManager manager = new LunethManager.Builder()
+                .setStorageMode(LunethManager.StorageModes.CAFFEINE)
                 .build();
-        TestStorageObject object = new TestStorageObject(69, "Hello");
+        TestStorageSerializer object = new TestStorageSerializer(manager);
 
-        System.out.println(lunethManager.setObject(object).join());
-        System.out.println(object.decodeKey(object.encodeKey())+" | "+ lunethManager.getObject(object).join());
+        System.out.println(manager.setObject(object, 12, "Test").join());
+        System.out.println(manager.getObject(object, 12).join());
     }
 
 }

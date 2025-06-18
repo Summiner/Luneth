@@ -17,18 +17,16 @@ public class LunethManager {
         this.module = module;
     }
 
-    public CompletableFuture<Object> getObject(StorageObject<?, ?> object) {
+    public <K, V> CompletableFuture<V> getObject(StorageSerializer<K, V> object, K key) {
         return CompletableFuture.supplyAsync(() -> {
-            CompletableFuture<ByteBuffer> future = module.getObject(object.encodeKey(), object.getIdentifier());
-            if(future==null) return null;
-            ByteBuffer buffer = future.join();
+            ByteBuffer buffer = module.getObject(object.encodeKey(key), object.getIdentifier()).join();
             if(buffer==null) return null;
             return object.decodeValue(buffer);
         });
     }
 
-    public CompletableFuture<Boolean> setObject(StorageObject<?, ?> object) {
-        return module.setObject(object.encodeKey(), object.encodeValue(), object.getIdentifier());
+    public <K, V> CompletableFuture<Boolean> setObject(StorageSerializer<K, V> object, K key, V value) {
+        return module.setObject(object.encodeKey(key), object.encodeValue(value), object.getIdentifier());
     }
 
     public enum StorageModes {
