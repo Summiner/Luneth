@@ -19,7 +19,9 @@ public class LunethManager {
 
     public CompletableFuture<Object> getObject(StorageObject<?, ?> object) {
         return CompletableFuture.supplyAsync(() -> {
-            ByteBuffer buffer = module.getObject(object.encodeKey(), object.getIdentifier()).join();
+            CompletableFuture<ByteBuffer> future = module.getObject(object.encodeKey(), object.getIdentifier());
+            if(future==null) return null;
+            ByteBuffer buffer = future.join();
             if(buffer==null) return null;
             return object.decodeValue(buffer);
         });
