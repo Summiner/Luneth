@@ -10,6 +10,8 @@ public class Test {
 
         System.out.println(manager.setObject(object, 12, "Test").join());
         System.out.println(manager.getObject(object, 12).join());
+        System.out.println(manager.removeObject(object, 12).join());
+        System.out.println(manager.getObject(object, 12).join());
     }
 
 }

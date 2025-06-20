@@ -29,6 +29,10 @@ public class LunethManager {
         return module.setObject(object.encodeKey(key), object.encodeValue(value), object.getIdentifier());
     }
 
+    public <K, V> CompletableFuture<Boolean> removeObject(StorageSerializer<K, V> object, K key) {
+        return module.removeObject(object.encodeKey(key), object.getIdentifier());
+    }
+
     public enum StorageModes {
         // Temporary Types
         REDIS,

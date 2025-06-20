@@ -1,6 +1,7 @@
 package rs.jamie.luneth.modules;
 
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.api.async.RedisAsyncCommands;
 import io.lettuce.core.api.async.RedisStringAsyncCommands;
 import io.lettuce.core.codec.RedisCodec;
 
@@ -11,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class RedisModule implements Module {
 
-    private final RedisStringAsyncCommands<ByteBuffer, ByteBuffer> redis;
+    private final RedisAsyncCommands<ByteBuffer, ByteBuffer> redis;
     private static final Charset charSet = StandardCharsets.UTF_8;
     private final int cacheTime;
 
@@ -46,6 +47,21 @@ public class RedisModule implements Module {
                 } else {
                     redis.set(addIdentifier(key, identifier), value);
                 }
+                return true;
+            } catch (Exception ignored) {
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Boolean> removeObject(ByteBuffer key, String identifier) {
+        if (!identifier.matches("[a-zA-Z0-9_]+")) {
+            throw new IllegalArgumentException("Invalid table name: " + identifier);
+        }
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                redis.del(addIdentifier(key, identifier)).get();
                 return true;
             } catch (Exception ignored) {
                 return false;

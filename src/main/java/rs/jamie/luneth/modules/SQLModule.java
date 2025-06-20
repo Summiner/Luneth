@@ -105,6 +105,25 @@ public class SQLModule implements Module {
     }
 
     @Override
+    public CompletableFuture<Boolean> removeObject(ByteBuffer key, String identifier) {
+        if (key==null) throw new IllegalArgumentException("Invalid Key");
+        if (conn==null) throw new IllegalArgumentException("Database Connection is null");
+        if (!identifier.matches("[a-zA-Z0-9_]+")) {
+            throw new IllegalArgumentException("Invalid table name: " + identifier);
+        }
+        return CompletableFuture.supplyAsync(() -> {
+            String sql = "DELETE FROM " + identifier + " WHERE \"key\" = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setBytes(1, key.array());
+                ps.executeUpdate();
+                return true;
+            } catch (SQLException e) {
+                return false;
+            }
+        });
+    }
+
+    @Override
     public void createTable(String name) {
         if (!name.matches("[a-zA-Z0-9_]+")) {
             throw new IllegalArgumentException("Invalid table name: " + name);

@@ -46,6 +46,19 @@ public class CaffeineModule implements Module {
         }
     }
 
+    @Override
+    public CompletableFuture<Boolean> removeObject(ByteBuffer key, String identifier) {
+        if (!identifier.matches("[a-zA-Z0-9_]+")) {
+            throw new IllegalArgumentException("Invalid table name: " + identifier);
+        }
+        try {
+            cache.synchronous().invalidate(addIdentifier(key, identifier));
+            return CompletableFuture.completedFuture(true);
+        } catch (Exception e) {
+            return CompletableFuture.completedFuture(false);
+        }
+    }
+
     private ByteBuffer addIdentifier(ByteBuffer buffer, String identifier) {
         if(identifier==null) return null;
         byte[] id = identifier.getBytes(charSet);

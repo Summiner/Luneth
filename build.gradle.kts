@@ -15,7 +15,6 @@ repositories {
 }
 
 dependencies {
-    implementation("com.h2database:h2:2.3.232")
     implementation("io.lettuce:lettuce-core:6.6.0.RELEASE")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.0")
     compileOnly("org.jetbrains:annotations:24.0.1")

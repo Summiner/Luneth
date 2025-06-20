@@ -9,6 +9,8 @@ public interface Module {
 
     CompletableFuture<Boolean> setObject(ByteBuffer key, ByteBuffer value, String identifier);
 
+    CompletableFuture<Boolean> removeObject(ByteBuffer key, String identifier);
+
     default void createTable(String name) {}
 
 }
