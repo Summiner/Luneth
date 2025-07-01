@@ -6,7 +6,7 @@ public class Test {
         LunethManager manager = new LunethManager.Builder()
                 .setStorageMode(LunethManager.StorageModes.CAFFEINE)
                 .build();
-        TestStorageSerializer object = new TestStorageSerializer(manager);
+        TestStorageSerializer object = new TestStorageSerializer();
 
         System.out.println(manager.setObject(object, 12, "Test").join());
         System.out.println(manager.getObject(object, 12).join());

@@ -2,19 +2,22 @@ package rs.jamie.luneth.modules;
 
 import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class CaffeineModule implements Module {
 
-    private final AsyncCache<ByteBuffer, ByteBuffer> cache;
+    private final AsyncCache<String, ByteBuffer> cache;
     private static final Charset charSet = StandardCharsets.UTF_8;
 
     public CaffeineModule(Integer cacheTime) {
+        System.out.println(cacheTime);
         if(cacheTime==0) {
             cache = Caffeine.newBuilder().buildAsync();
         } else {
@@ -25,21 +28,25 @@ public class CaffeineModule implements Module {
     }
 
     @Override
-    public CompletableFuture<ByteBuffer> getObject(ByteBuffer key, String identifier) {
+    public CompletableFuture<@Nullable ByteBuffer> getObject(ByteBuffer key, String identifier) {
+        if(key == null) return CompletableFuture.completedFuture(null);
         if (!identifier.matches("[a-zA-Z0-9_]+")) {
             throw new IllegalArgumentException("Invalid table name: " + identifier);
         }
-        CompletableFuture<ByteBuffer> buffer = cache.getIfPresent(addIdentifier(key, identifier));
+        String str = cachekey(key, identifier);
+        CompletableFuture<ByteBuffer> buffer = cache.getIfPresent(str);
         return buffer!=null?buffer:CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public CompletableFuture<Boolean> setObject(ByteBuffer key, ByteBuffer value, String identifier) {
+    public CompletableFuture<@Nullable Boolean> setObject(ByteBuffer key, ByteBuffer value, String identifier) {
+        if(key == null || value == null) return CompletableFuture.completedFuture(false);
         if (!identifier.matches("[a-zA-Z0-9_]+")) {
             throw new IllegalArgumentException("Invalid table name: " + identifier);
         }
+        String str = cachekey(key, identifier);
         try {
-            cache.put(addIdentifier(key, identifier), CompletableFuture.completedFuture(value));
+            cache.put(str, CompletableFuture.completedFuture(value));
             return CompletableFuture.completedFuture(true);
         } catch (Exception e) {
             return CompletableFuture.completedFuture(false);
@@ -47,16 +54,25 @@ public class CaffeineModule implements Module {
     }
 
     @Override
-    public CompletableFuture<Boolean> removeObject(ByteBuffer key, String identifier) {
+    public CompletableFuture<@Nullable Boolean> removeObject(ByteBuffer key, String identifier) {
+        if(key == null) return CompletableFuture.completedFuture(false);
         if (!identifier.matches("[a-zA-Z0-9_]+")) {
             throw new IllegalArgumentException("Invalid table name: " + identifier);
         }
+        String str = cachekey(key, identifier);
         try {
-            cache.synchronous().invalidate(addIdentifier(key, identifier));
+            cache.synchronous().invalidate(str);
             return CompletableFuture.completedFuture(true);
         } catch (Exception e) {
             return CompletableFuture.completedFuture(false);
         }
+    }
+
+    private String cachekey(ByteBuffer buffer, String id) {
+        ByteBuffer full = addIdentifier(buffer, id);;
+        byte[] bytes = new byte[full.remaining()];;
+        full.slice().get(bytes);
+        return Base64.getEncoder().encodeToString(bytes);
     }
 
     private ByteBuffer addIdentifier(ByteBuffer buffer, String identifier) {

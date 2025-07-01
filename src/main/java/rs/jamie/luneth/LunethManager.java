@@ -19,18 +19,42 @@ public class LunethManager {
 
     public <K, V> CompletableFuture<V> getObject(StorageSerializer<K, V> object, K key) {
         return CompletableFuture.supplyAsync(() -> {
-            ByteBuffer buffer = module.getObject(object.encodeKey(key), object.getIdentifier()).join();
-            if(buffer==null) return null;
-            return object.decodeValue(buffer);
+            try {
+                CompletableFuture<ByteBuffer> future = module.getObject(object.encodeKey(key), object.getIdentifier());
+                future.exceptionally((e) -> {
+                    e.printStackTrace();
+                    return null;
+                });
+                ByteBuffer buffer = future.join();
+                if(buffer==null) return null;
+                return object.decodeValue(buffer);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         });
     }
 
-    public <K, V> CompletableFuture<Boolean> setObject(StorageSerializer<K, V> object, K key, V value) {
-        return module.setObject(object.encodeKey(key), object.encodeValue(value), object.getIdentifier());
+    public <K, V> CompletableFuture<Boolean> setObject(StorageSerializer<K, V> serializer, K key, V value) {
+        CompletableFuture<Boolean> future = module.setObject(serializer.encodeKey(key), serializer.encodeValue(value), serializer.getIdentifier());
+        future.exceptionally((e) -> {
+            e.printStackTrace();
+            return null;
+        });
+        return future;
     }
 
-    public <K, V> CompletableFuture<Boolean> removeObject(StorageSerializer<K, V> object, K key) {
-        return module.removeObject(object.encodeKey(key), object.getIdentifier());
+    public <K, V> CompletableFuture<Boolean> removeObject(StorageSerializer<K, V> serializer, K key) {
+        CompletableFuture<Boolean> future = module.removeObject(serializer.encodeKey(key), serializer.getIdentifier());
+        future.exceptionally((e) -> {
+            e.printStackTrace();
+            return null;
+        });
+        return future;
+    }
+
+    public <K, V> void createTable(StorageSerializer<K, V> serializer) {
+        module.createTable(serializer.getIdentifier());
     }
 
     public enum StorageModes {

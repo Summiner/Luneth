@@ -5,12 +5,6 @@ import java.nio.charset.StandardCharsets;
 
 public class TestStorageSerializer implements StorageSerializer<Integer, String> {
 
-    LunethManager manager;
-
-    public TestStorageSerializer(LunethManager manager) {
-        this.manager = manager;
-    }
-
     @Override
     public String getIdentifier() {
         return "LunethTestObject";
