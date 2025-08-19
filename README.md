@@ -1,6 +1,6 @@
 # Luneth
 
-> This is a java library that makes storing Key/Value objects with serialization simple and reliable.
+> This is a java library that makes storing Key/Object data with serialization simple and reliable.
 
 ### Supported Storage Methods
 - [x] Redis (In-Memory)
@@ -52,7 +52,7 @@ dependencies {
 <dependency>
   <groupId>com.github.Summiner</groupId>
   <artifactId>Luneth</artifactId>
-  <version>1.0.1</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 </details>
@@ -63,13 +63,34 @@ dependencies {
 <summary>Java Example</summary>
 
 ```java
-LunethManager manager = new LunethManager.Builder()
-        .setStorageMode(LunethManager.StorageModes.CAFFEINE)
-        .build();
+public static void main(String[] args) {
+    LunethManager manager = new LunethManager.Builder()
+            .setStorageMode(LunethManager.StorageModes.CAFFEINE)
+            .build();
 
-TestStorageSerializer object = new TestStorageSerializer(manager);
+    UUID uuid = UUID.randomUUID();
+    ExampleObject object = new ExampleObject(uuid, "Example");
 
-System.out.println(manager.setObject(object, 12, "Test").join());
-System.out.println(manager.getObject(object, 12).join());
+    System.out.println(manager.put(object).join()); // Write object to Luneth
+    System.out.println(manager.get(ExampleObject.class, uuid).join()); // Read object from Luneth
+}
+
+@LunethSerializer(identifier = "ExampleObject")
+public static class ExampleObject implements StorageObject {
+    @LunethField(key = true)
+    public final UUID player;
+
+    @LunethField(id = 1)
+    public final String username;
+
+    public ExampleObject(UUID player, String username) {
+        this.player = player;
+        this.username = username;
+    }
+
+    public String toString() {
+        return "ExampleObject{UUID player="+player+", String username="+username+"}";
+    }
+}
 ```
 </details>
