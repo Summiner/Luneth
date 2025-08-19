@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.Summiner:Luneth:1.0.1")
+    implementation("com.github.Summiner:Luneth:1.1.0")
 }
 ```
 </details>
@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Summiner:Luneth:1.0.1'
+    implementation 'com.github.Summiner:Luneth:1.1.0'
 }
 ```
 </details>
