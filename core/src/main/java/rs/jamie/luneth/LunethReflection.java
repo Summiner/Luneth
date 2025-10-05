@@ -1,5 +1,6 @@
 package rs.jamie.luneth;
 
+import org.jetbrains.annotations.NotNull;
 import rs.jamie.luneth.annotations.LunethField;
 import rs.jamie.luneth.annotations.LunethSerializer;
 
@@ -16,7 +17,8 @@ public class LunethReflection {
             LunethSerializer lunethSerializer = clazz.getAnnotation(LunethSerializer.class);
             return lunethSerializer.identifier();
         }
-        throw new IllegalStateException("Class " + clazz.getName() + " must be annotated with @LunethSerializer");
+
+        throw new IllegalStateException("[Luneth] Class " + clazz.getName() + " must be annotated with @LunethSerializer");
     }
 
     public static String getIdentifier(Class<? extends StorageObject> clazz) {
@@ -24,30 +26,30 @@ public class LunethReflection {
             LunethSerializer lunethSerializer = clazz.getAnnotation(LunethSerializer.class);
             return lunethSerializer.identifier();
         }
-        throw new IllegalStateException("Class " + clazz.getName() + " must be annotated with @LunethSerializer");
+
+        throw new IllegalStateException("[Luneth] Class " + clazz.getName() + " must be annotated with @LunethSerializer");
     }
 
     public static Field getKeyField(StorageObject object) {
         Class<?> clazz = object.getClass();
-        for (Field field : clazz.getDeclaredFields()) {
-            LunethField annotation = field.getAnnotation(LunethField.class);
-            if (annotation != null && annotation.key()) {
-                field.setAccessible(true);
-                return field;
-            }
-        }
-        throw new IllegalStateException("@LunethField: No key field found in "+clazz.getName());
+        return getField(clazz.getDeclaredFields(), clazz.getName(), clazz);
     }
 
     public static Field getKeyField(Class<? extends StorageObject> clazz) {
-        for (Field field : clazz.getDeclaredFields()) {
+        return getField(clazz.getDeclaredFields(), clazz.getName(), clazz);
+    }
+
+    @NotNull
+    private static Field getField(Field[] declaredFields, String name, Class<?> clazz) {
+        for (Field field : declaredFields) {
             LunethField annotation = field.getAnnotation(LunethField.class);
             if (annotation != null && annotation.key()) {
                 field.setAccessible(true);
                 return field;
             }
         }
-        throw new IllegalStateException("@LunethField: No key field found in "+clazz.getName());
+
+        throw new IllegalStateException("[Luneth] @LunethField: No key field found in "+ name);
     }
 
     @SuppressWarnings("unchecked")
@@ -55,28 +57,22 @@ public class LunethReflection {
         try {
             return (T) field.get(object);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("Failed to access key field in " + object.getClass().getName(), e);
+            throw new RuntimeException("[Luneth] Failed to access key field in " + object.getClass().getName(), e);
         }
     }
 
 
     public static List<Field> getValueFields(StorageObject object) {
-        Class<?> clazz = object.getClass();
-        List<Field> fields = new ArrayList<>();
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(LunethField.class)) {
-                if(!field.getAnnotation(LunethField.class).key()) fields.add(field);
-            }
-        }
-        fields.sort(Comparator.comparingInt(f -> f.getAnnotation(LunethField.class).id()));
-        return fields;
+        return getValueFields(object.getClass());
     }
 
     public static List<Field> getValueFields(Class<?> clazz) {
         List<Field> fields = new ArrayList<>();
         for (Field field : clazz.getDeclaredFields()) {
             if (field.isAnnotationPresent(LunethField.class)) {
-                if(!field.getAnnotation(LunethField.class).key()) fields.add(field);
+                if(!field.getAnnotation(LunethField.class).key()) {
+                    fields.add(field);
+                }
             }
         }
         fields.sort(Comparator.comparingInt(f -> f.getAnnotation(LunethField.class).id()));

@@ -19,7 +19,7 @@ public class LunethSerializers {
 
     public static void register(@NotNull Class<?> clazz, @NotNull StorageSerializer<?> serializer, boolean silent) {
         if(serializers.containsKey(clazz) || serializers.putIfAbsent(clazz, serializer) != null) {
-            throw new IllegalArgumentException("Serializer already registered with this id");
+            throw new IllegalArgumentException("[Luneth] Serializer already registered with this id");
         }
         if(!silent) {
             System.out.println("Registered Serializer: "+clazz.getName()+ " → "+serializer.getClass().getName());
@@ -47,8 +47,7 @@ public class LunethSerializers {
                     }
                     register(type, instance, silent);
                 } catch (Exception e) {
-                    System.err.println("Failed to instantiate: " + cls.getName());
-                    e.printStackTrace();
+                    throw new RuntimeException("[Luneth] Failed to instantiate: " + cls.getName(), e);
                 }
             }
         }

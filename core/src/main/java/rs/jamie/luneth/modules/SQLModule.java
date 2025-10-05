@@ -1,5 +1,8 @@
 package rs.jamie.luneth.modules;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.nio.ByteBuffer;
 import java.sql.*;
 import java.util.Map;
@@ -7,54 +10,70 @@ import java.util.concurrent.CompletableFuture;
 
 public class SQLModule implements Module {
 
-    private static final Map<String, String> DRIVER_MAP = Map.ofEntries(
-            Map.entry("h2", "org.h2.Driver"),
-            Map.entry("mariadb", "org.mariadb.jdbc.Driver"),
-            Map.entry("mysql", "com.mysql.cj.jdbc.Driver"),
-            Map.entry("sqlite", "org.sqlite.JDBC"),
-            Map.entry("postgresql", "org.postgresql.Driver"),
-            Map.entry("oracle", "oracle.jdbc.OracleDriver"),
-            Map.entry("sqlserver", "com.microsoft.sqlserver.jdbc.SQLServerDriver")
-    );
+    private final Connection conn;
 
-    private final Connection conn ;
+    private enum DBMS {
+        SQLITE("sqlite", "org.sqlite.JDBC"),
+        MYSQL("mysql", "com.mysql.cj.jdbc.Driver"),
+        POSTGRESQL("postgresql", "org.postgresql.Driver"),
+        H2("h2", "org.h2.Driver"),
+        HSQLDB("hsqldb", "org.hsqldb.jdbc.JDBCDriver"),
+        DERBY("derby", "org.apache.derby.jdbc.EmbeddedDriver"),
+        MARIADB("mariadb", "org.mariadb.jdbc.Driver"),
+        ORACLE("oracle", "oracle.jdbc.OracleDriver"),
+        SQLSERVER("sqlserver", "com.microsoft.sqlserver.jdbc.SQLServerDriver"),
+        DB2("db2", "com.ibm.db2.jcc.DB2Driver"),
+        SYBASE("sybase", "com.sybase.jdbc4.jdbc.SybDriver"),
+        INFORMIX("informix", "com.informix.jdbc.IfxDriver"),
+        FIREBIRD("firebird", "org.firebirdsql.jdbc.FBDriver"),
+        INTERBASE("interbase", "interbase.interclient.Driver");
+
+        private final String value;
+        private final String className;
+
+        DBMS(String value, String className) {
+            this.value = value;
+            this.className = className;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getClassName() {
+            return className;
+        }
+
+        public static void loadFromJdbc(@NotNull String url) {
+            url = url.toLowerCase();
+            for(DBMS driver : DBMS.values()) {
+                if (url.contains(":" + driver.getValue() + ":")) {
+                    try {
+                        Class.forName(driver.className);
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException("Driver (" + driver.value + ") not found in classpath", e);
+                    }
+                    return;
+                }
+            }
+            throw new IllegalArgumentException("No driver found for JDBC URL: " + url);
+        }
+    }
 
     public SQLModule(String url) {
-        Connection c;
         try {
-            registerDrivers(url);
-            c = DriverManager.getConnection(url);
+            DBMS.loadFromJdbc(url);
+            conn = DriverManager.getConnection(url);
         } catch (Exception e) {
-            c = null;
-            e.printStackTrace();
+            throw new RuntimeException("Failed to connect to JDBC URL: " + url, e);
         }
-        conn = c;
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                this.conn.close();
+                conn.close();
             } catch (Exception ignored) {}
         }));
     }
-
-    private void registerDrivers(String jdbcUrl) throws ClassNotFoundException {
-        String driver = getDriverClassName(jdbcUrl);
-        if (driver != null) {
-            Class.forName(driver);
-        } else {
-            throw new IllegalArgumentException("No driver found for JDBC URL: " + jdbcUrl);
-        }
-    }
-
-    private static String getDriverClassName(String jdbcUrl) {
-        for (Map.Entry<String, String> entry : DRIVER_MAP.entrySet()) {
-            if (jdbcUrl.contains(":" + entry.getKey() + ":")) {
-                return entry.getValue();
-            }
-        }
-        return null;
-    }
-
 
     @Override
     public CompletableFuture<ByteBuffer> getObject(ByteBuffer key, String identifier) {
@@ -63,6 +82,7 @@ public class SQLModule implements Module {
         if (!identifier.matches("[a-zA-Z0-9_]+")) {
             throw new IllegalArgumentException("Invalid table name: " + identifier);
         }
+
         return CompletableFuture.supplyAsync(() -> {
             String sql = "SELECT \"value\" FROM " + identifier + " WHERE \"key\" = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -74,7 +94,7 @@ public class SQLModule implements Module {
                     }
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new RuntimeException("[Luneth] Error executing SQL:getObject()", e);
             }
             return null;
         });
@@ -88,18 +108,16 @@ public class SQLModule implements Module {
         if (!identifier.matches("[a-zA-Z0-9_]+")) {
             throw new IllegalArgumentException("Invalid table name: " + identifier);
         }
+
         return CompletableFuture.supplyAsync(() -> {
-            try {
-                String mergeSql = "MERGE INTO " + identifier + " (\"key\", \"value\") KEY(\"key\") VALUES (?, ?)";
-                try (PreparedStatement ps = conn.prepareStatement(mergeSql)) {
-                    ps.setBytes(1, key.array());
-                    ps.setBytes(2, value.array());
-                    ps.executeUpdate();
-                }
+            String mergeSql = "MERGE INTO " + identifier + " (\"key\", \"value\") KEY(\"key\") VALUES (?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(mergeSql)) {
+                ps.setBytes(1, key.array());
+                ps.setBytes(2, value.array());
+                ps.executeUpdate();
                 return true;
             } catch (Exception e) {
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("[Luneth] Error executing SQL:setObject()", e);
             }
         });
     }
@@ -111,6 +129,7 @@ public class SQLModule implements Module {
         if (!identifier.matches("[a-zA-Z0-9_]+")) {
             throw new IllegalArgumentException("Invalid table name: " + identifier);
         }
+
         return CompletableFuture.supplyAsync(() -> {
             String sql = "DELETE FROM " + identifier + " WHERE \"key\" = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -118,7 +137,7 @@ public class SQLModule implements Module {
                 ps.executeUpdate();
                 return true;
             } catch (SQLException e) {
-                return false;
+                throw new RuntimeException("[Luneth] Error executing SQL:removeObject()", e);
             }
         });
     }
@@ -135,7 +154,7 @@ public class SQLModule implements Module {
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("[Luneth] Error executing SQL:createTable()", e);
         }
     }
 }

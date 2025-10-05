@@ -3,6 +3,7 @@ package rs.jamie.luneth.modules;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.async.RedisAsyncCommands;
 import io.lettuce.core.codec.RedisCodec;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -24,13 +25,13 @@ public class RedisModule implements Module {
     @Override
     public CompletableFuture<ByteBuffer> getObject(ByteBuffer key, String identifier) {
         if (!identifier.matches("[a-zA-Z0-9_]+")) {
-            throw new IllegalArgumentException("Invalid table name: " + identifier);
+            throw new IllegalArgumentException("[Luneth] Invalid table name: " + identifier);
         }
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return redis.get(addIdentifier(key, identifier)).get();
-            } catch (Exception ignored) {
-                return null;
+            } catch (Exception e) {
+                throw new RuntimeException("[Luneth] Error executing Redis:getObject()", e);
             }
         });
     }
@@ -48,8 +49,8 @@ public class RedisModule implements Module {
                     redis.set(addIdentifier(key, identifier), value);
                 }
                 return true;
-            } catch (Exception ignored) {
-                return false;
+            } catch (Exception e) {
+                throw new RuntimeException("[Luneth] Error executing Redis:setObject()", e);
             }
         });
     }

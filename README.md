@@ -6,7 +6,7 @@
 - [x] Redis (In-Memory)
 - [x] Caffeine (In-Memory)
 - [x] SQL (Supports most drivers)
-- [ ] MondoDB (Coming Soon)
+- [ ] MongoDB (Coming Soon)
 - [ ] Scylla (Coming Soon)
 
 ### Installation

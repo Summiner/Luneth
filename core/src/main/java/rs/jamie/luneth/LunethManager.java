@@ -26,9 +26,8 @@ public class LunethManager {
             StorageSerializer<K> serializer = (StorageSerializer<K>) LunethSerializers.getSerializer(field.getType());
             return ByteBuffer.wrap(serializer.set(LunethReflection.getValueObject(field, object)));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("[Luneth] Error executing Luneth:getKey()/1", e);
         }
-        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -38,9 +37,8 @@ public class LunethManager {
             StorageSerializer<K> serializer = (StorageSerializer<K>) LunethSerializers.getSerializer(field.getType());
             return ByteBuffer.wrap(serializer.set(key));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("[Luneth] Error executing Luneth:getKey()/2", e);
         }
-        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -51,9 +49,10 @@ public class LunethManager {
                 StorageSerializer<K> serializer = (StorageSerializer<K>) LunethSerializers.getSerializer(field.getType());
                 values.add(ByteBuffer.wrap(serializer.set(LunethReflection.getValueObject(field, object))));
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException("[Luneth] Error executing SQL:getValues()", e);
             }
         }
+
         return values;
     }
 
@@ -64,7 +63,6 @@ public class LunethManager {
         List<ByteBuffer> values = getValues(object);
         int totalsize = 0;
         int valuetotal = 0;
-
         for (ByteBuffer value : values) {
             totalsize += value.capacity();
             valuetotal++;
@@ -83,9 +81,9 @@ public class LunethManager {
         buffer.flip();
         CompletableFuture<Boolean> future = module.setObject(getKey(object), buffer, id);
         future.exceptionally((e) -> {
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException("[Luneth] Error executing SQL:put()", e);
         });
+
         return future;
     }
 
@@ -96,15 +94,14 @@ public class LunethManager {
                 if(id == null) throw new IllegalArgumentException("StorageObject is not registered correctly "+clazz.getName());
                 CompletableFuture<ByteBuffer> future = module.getObject(getKey(clazz, key), id);
                 future.exceptionally((e) -> {
-                    e.printStackTrace();
-                    return null;
+                    throw new RuntimeException("[Luneth] Error executing SQL:get()", e);
                 });
                 ByteBuffer buffer = future.join();
                 if(buffer==null) return null;
 
                 List<ByteBuffer> values = new ArrayList<>();
-                int valuetotal = buffer.getInt();
-                for (int i=0; i < valuetotal; i++) {
+                int valueTotal = buffer.getInt();
+                for (int i=0; i < valueTotal; i++) {
                     int size = buffer.getInt();
                     byte[] bytes = new byte[size];
                     buffer.get(bytes, 0, size);
@@ -118,16 +115,11 @@ public class LunethManager {
                 for(int i=0; i < fields.size(); i++) {
                     Field field = fields.get(i);
                     ByteBuffer value = values.get(i);
-                    try {
-                        StorageSerializer<K> serializer = (StorageSerializer<K>) LunethSerializers.getSerializer(field.getType());
-                        if(serializer == null) {
-                            System.out.println("Null Serializer For: " + field.getType());
-                            continue;
-                        }
-                        objects.add(serializer.get(value));
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    StorageSerializer<K> serializer = (StorageSerializer<K>) LunethSerializers.getSerializer(field.getType());
+                    if(serializer == null) {
+                        throw new RuntimeException("[Luneth] Error executing Luneth:get() | Null Serializer For: " + field.getType());
                     }
+                    objects.add(serializer.get(value));
                 }
 
                 Constructor<?>[] constructors = clazz.getConstructors();
@@ -148,32 +140,23 @@ public class LunethManager {
                     }
                 }
 
-                System.out.println("Trying to match constructor:");
-                System.out.println("Deserialized object types: " + objects.stream().map(o -> o == null ? "null" : o.getClass().getName()).toList());
                 throw new IllegalStateException("No suitable constructor found for " + clazz.getName());
-
             } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+                throw new RuntimeException("[Luneth] Error executing SQL:get()", e);
             }
         });
     }
 
     public <K, T extends StorageObject> CompletableFuture<Boolean> remove(Class<T> clazz, K key) {
         return CompletableFuture.supplyAsync(() -> {
-            try {
-                String id = LunethReflection.getIdentifier(clazz);
-                if(id == null) throw new IllegalArgumentException("StorageObject is not registered correctly "+clazz.getTypeName());
-                CompletableFuture<Boolean> future = module.removeObject(getKey(clazz, key), id);
-                future.exceptionally((e) -> {
-                    e.printStackTrace();
-                    return false;
-                });
-                return future.join();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
+            String id = LunethReflection.getIdentifier(clazz);
+            if(id == null) throw new IllegalArgumentException("StorageObject is not registered correctly "+clazz.getTypeName());
+            CompletableFuture<Boolean> future = module.removeObject(getKey(clazz, key), id);
+            future.exceptionally((e) -> {
+                throw new RuntimeException("[Luneth] Error executing Luneth:remove()", e);
+            });
+
+            return future.join();
         });
     }
 
@@ -268,6 +251,7 @@ public class LunethManager {
                 LunethSerializers.registerPackage(pkg, false);
             }
 
+            System.out.println("nag");
             return new LunethManager(module);
         }
 
