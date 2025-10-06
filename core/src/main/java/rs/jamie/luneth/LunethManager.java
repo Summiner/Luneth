@@ -26,7 +26,7 @@ public class LunethManager {
             StorageSerializer<K> serializer = (StorageSerializer<K>) LunethSerializers.getSerializer(field.getType());
             return ByteBuffer.wrap(serializer.set(LunethReflection.getValueObject(field, object)));
         } catch (Exception e) {
-            throw new RuntimeException("[Luneth] Error executing Luneth:getKey()/1", e);
+            throw new RuntimeException("Error executing Luneth:getKey()/1", e);
         }
     }
 
@@ -37,7 +37,7 @@ public class LunethManager {
             StorageSerializer<K> serializer = (StorageSerializer<K>) LunethSerializers.getSerializer(field.getType());
             return ByteBuffer.wrap(serializer.set(key));
         } catch (Exception e) {
-            throw new RuntimeException("[Luneth] Error executing Luneth:getKey()/2", e);
+            throw new RuntimeException("Error executing Luneth:getKey()/2", e);
         }
     }
 
@@ -49,7 +49,7 @@ public class LunethManager {
                 StorageSerializer<K> serializer = (StorageSerializer<K>) LunethSerializers.getSerializer(field.getType());
                 values.add(ByteBuffer.wrap(serializer.set(LunethReflection.getValueObject(field, object))));
             } catch (Exception e) {
-                throw new RuntimeException("[Luneth] Error executing SQL:getValues()", e);
+                throw new RuntimeException("Error executing SQL:getValues()", e);
             }
         }
 
@@ -81,7 +81,7 @@ public class LunethManager {
         buffer.flip();
         CompletableFuture<Boolean> future = module.setObject(getKey(object), buffer, id);
         future.exceptionally((e) -> {
-            throw new RuntimeException("[Luneth] Error executing SQL:put()", e);
+            throw new RuntimeException("Error executing SQL:put()", e);
         });
 
         return future;
@@ -94,7 +94,7 @@ public class LunethManager {
                 if(id == null) throw new IllegalArgumentException("StorageObject is not registered correctly "+clazz.getName());
                 CompletableFuture<ByteBuffer> future = module.getObject(getKey(clazz, key), id);
                 future.exceptionally((e) -> {
-                    throw new RuntimeException("[Luneth] Error executing SQL:get()", e);
+                    throw new RuntimeException("Error executing SQL:get()", e);
                 });
                 ByteBuffer buffer = future.join();
                 if(buffer==null) return null;
@@ -117,7 +117,7 @@ public class LunethManager {
                     ByteBuffer value = values.get(i);
                     StorageSerializer<K> serializer = (StorageSerializer<K>) LunethSerializers.getSerializer(field.getType());
                     if(serializer == null) {
-                        throw new RuntimeException("[Luneth] Error executing Luneth:get() | Null Serializer For: " + field.getType());
+                        throw new RuntimeException("Error executing Luneth:get() | Null Serializer For: " + field.getType());
                     }
                     objects.add(serializer.get(value));
                 }
@@ -142,7 +142,7 @@ public class LunethManager {
 
                 throw new IllegalStateException("No suitable constructor found for " + clazz.getName());
             } catch (Exception e) {
-                throw new RuntimeException("[Luneth] Error executing SQL:get()", e);
+                throw new RuntimeException("Error executing SQL:get()", e);
             }
         });
     }
@@ -153,7 +153,7 @@ public class LunethManager {
             if(id == null) throw new IllegalArgumentException("StorageObject is not registered correctly "+clazz.getTypeName());
             CompletableFuture<Boolean> future = module.removeObject(getKey(clazz, key), id);
             future.exceptionally((e) -> {
-                throw new RuntimeException("[Luneth] Error executing Luneth:remove()", e);
+                throw new RuntimeException("Error executing Luneth:remove()", e);
             });
 
             return future.join();
@@ -184,6 +184,8 @@ public class LunethManager {
         private StorageModes storageMode = StorageModes.CAFFEINE;
         private String connectionUrl = "redis://localhost";
         private Duration cacheDuration = Duration.ZERO;
+        private String database_name = null;
+        private String collection_name = null;
         private List<String> packages = new ArrayList<>();
 
         /**
@@ -220,6 +222,24 @@ public class LunethManager {
         }
 
         /**
+         * Set the database name to use for your connection
+         * @param database_name your main classpath
+         */
+        public @NotNull Builder setDatabase(String database_name) {
+            this.database_name = database_name;
+            return this;
+        }
+
+        /**
+         * Set the collection name to use for your connection
+         * @param collection_name your main classpath
+         */
+        public @NotNull Builder setCollection(String collection_name) {
+            this.collection_name = collection_name;
+            return this;
+        }
+
+        /**
          * Register a package containing serializers
          * @param pkg your main classpath
          */
@@ -230,6 +250,7 @@ public class LunethManager {
 
         public @NotNull LunethManager build() {
             Module module;
+            System.out.println("nag");
             switch (storageMode) {
                 case REDIS -> {
                     module = new RedisModule(connectionUrl, cacheDuration);
@@ -238,7 +259,13 @@ public class LunethManager {
                     module = new SQLModule(connectionUrl);
                 }
                 case MONGODB -> {
-                    module = new MongoModule(connectionUrl, cacheDuration);
+                    if(database_name == null) {
+                        throw new IllegalArgumentException("Builder#setDatabase is required for MongoDB");
+                    }
+                    if(collection_name == null) {
+                        throw new IllegalArgumentException("Builder#setCollection is required for MongoDB");
+                    }
+                    module = new MongoModule(connectionUrl, database_name, collection_name);
                 }
                 default -> {
                     module = new CaffeineModule(cacheDuration);
@@ -251,7 +278,6 @@ public class LunethManager {
                 LunethSerializers.registerPackage(pkg, false);
             }
 
-            System.out.println("nag");
             return new LunethManager(module);
         }
 

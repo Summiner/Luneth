@@ -18,7 +18,7 @@ public class LunethReflection {
             return lunethSerializer.identifier();
         }
 
-        throw new IllegalStateException("[Luneth] Class " + clazz.getName() + " must be annotated with @LunethSerializer");
+        throw new IllegalStateException("Class " + clazz.getName() + " must be annotated with @LunethSerializer");
     }
 
     public static String getIdentifier(Class<? extends StorageObject> clazz) {
@@ -27,7 +27,7 @@ public class LunethReflection {
             return lunethSerializer.identifier();
         }
 
-        throw new IllegalStateException("[Luneth] Class " + clazz.getName() + " must be annotated with @LunethSerializer");
+        throw new IllegalStateException("Class " + clazz.getName() + " must be annotated with @LunethSerializer");
     }
 
     public static Field getKeyField(StorageObject object) {
@@ -49,7 +49,7 @@ public class LunethReflection {
             }
         }
 
-        throw new IllegalStateException("[Luneth] @LunethField: No key field found in "+ name);
+        throw new IllegalStateException("@LunethField: No key field found in "+ name);
     }
 
     @SuppressWarnings("unchecked")
@@ -57,7 +57,7 @@ public class LunethReflection {
         try {
             return (T) field.get(object);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException("[Luneth] Failed to access key field in " + object.getClass().getName(), e);
+            throw new RuntimeException("Failed to access key field in " + object.getClass().getName(), e);
         }
     }
 

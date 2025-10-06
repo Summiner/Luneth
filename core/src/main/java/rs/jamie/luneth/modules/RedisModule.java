@@ -25,13 +25,13 @@ public class RedisModule implements Module {
     @Override
     public CompletableFuture<ByteBuffer> getObject(ByteBuffer key, String identifier) {
         if (!identifier.matches("[a-zA-Z0-9_]+")) {
-            throw new IllegalArgumentException("[Luneth] Invalid table name: " + identifier);
+            throw new IllegalArgumentException("Invalid table name: " + identifier);
         }
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return redis.get(addIdentifier(key, identifier)).get();
             } catch (Exception e) {
-                throw new RuntimeException("[Luneth] Error executing Redis:getObject()", e);
+                throw new RuntimeException("Error executing Redis:getObject()", e);
             }
         });
     }
@@ -50,7 +50,7 @@ public class RedisModule implements Module {
                 }
                 return true;
             } catch (Exception e) {
-                throw new RuntimeException("[Luneth] Error executing Redis:setObject()", e);
+                throw new RuntimeException("Error executing Redis:setObject()", e);
             }
         });
     }

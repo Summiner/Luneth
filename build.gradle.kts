@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "rs.jamie"
-version = "1.1.0"
+version = "1.1.1"
 
 allprojects {
     apply {
@@ -11,7 +11,7 @@ allprojects {
     }
 
     group = "rs.jamie"
-    version = "1.1.0"
+    version = "1.1.1"
 
     java.sourceCompatibility = JavaVersion.VERSION_16
     java.targetCompatibility = JavaVersion.VERSION_16

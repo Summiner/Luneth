@@ -2,6 +2,7 @@ package rs.jamie.luneth.modules;
 
 import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class CaffeineModule implements Module {
 
-    private final AsyncCache<String, ByteBuffer> cache;
+    private final AsyncCache<@NotNull String, ByteBuffer> cache;
     private static final Charset charSet = StandardCharsets.UTF_8;
 
     public CaffeineModule(Duration cacheDuration) {

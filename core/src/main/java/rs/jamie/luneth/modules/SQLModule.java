@@ -65,7 +65,7 @@ public class SQLModule implements Module {
             DBMS.loadFromJdbc(url);
             conn = DriverManager.getConnection(url);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to connect to JDBC URL: " + url, e);
+            throw new RuntimeException("Failed to connect to JDBC: " + url, e);
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -94,7 +94,7 @@ public class SQLModule implements Module {
                     }
                 }
             } catch (SQLException e) {
-                throw new RuntimeException("[Luneth] Error executing SQL:getObject()", e);
+                throw new RuntimeException("Error executing SQL:getObject()", e);
             }
             return null;
         });
@@ -117,7 +117,7 @@ public class SQLModule implements Module {
                 ps.executeUpdate();
                 return true;
             } catch (Exception e) {
-                throw new RuntimeException("[Luneth] Error executing SQL:setObject()", e);
+                throw new RuntimeException("Error executing SQL:setObject()", e);
             }
         });
     }
@@ -137,7 +137,7 @@ public class SQLModule implements Module {
                 ps.executeUpdate();
                 return true;
             } catch (SQLException e) {
-                throw new RuntimeException("[Luneth] Error executing SQL:removeObject()", e);
+                throw new RuntimeException("Error executing SQL:removeObject()", e);
             }
         });
     }
@@ -154,7 +154,7 @@ public class SQLModule implements Module {
         try (Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
-            throw new RuntimeException("[Luneth] Error executing SQL:createTable()", e);
+            throw new RuntimeException("Error executing SQL:createTable()", e);
         }
     }
 }

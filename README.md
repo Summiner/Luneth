@@ -6,7 +6,7 @@
 - [x] Redis (In-Memory)
 - [x] Caffeine (In-Memory)
 - [x] SQL (Supports most drivers)
-- [ ] MongoDB (Coming Soon)
+- [X] MongoDB (Coming Soon)
 - [ ] Scylla (Coming Soon)
 
 ### Installation
@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.Summiner:Luneth:1.1.0")
+    implementation("com.github.Summiner:Luneth:1.1.1")
 }
 ```
 </details>
@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Summiner:Luneth:1.1.0'
+    implementation 'com.github.Summiner:Luneth:1.1.1'
 }
 ```
 </details>
@@ -52,7 +52,7 @@ dependencies {
 <dependency>
   <groupId>com.github.Summiner</groupId>
   <artifactId>Luneth</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 </details>

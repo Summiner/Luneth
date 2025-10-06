@@ -1,5 +1,6 @@
 package rs.jamie.luneth;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import rs.jamie.luneth.annotations.LunethField;
@@ -16,7 +17,10 @@ public class LunethTest {
     @BeforeAll
     public static void setup() {
         manager = new LunethManager.Builder()
-                .setStorageMode(LunethManager.StorageModes.CAFFEINE)
+                .setStorageMode(LunethManager.StorageModes.MONGODB)
+                .setConnectionURL("mongodb+srv://jamie:zuXrYu6Yt1Z5TAyq@blzedev.lahddmv.mongodb.net/")
+                .setDatabase("plugins")
+                .setCollection("luneth")
                 .build();
 
         System.out.println("Passed manager initialization");
@@ -24,7 +28,8 @@ public class LunethTest {
 
     @Test
     public void testValidInput() {
-        UUID uuid = UUID.randomUUID();
+        System.out.println("Testing Valid Input:");
+        UUID uuid = UUID.fromString("c980d9db-5b01-4440-8d2d-e764cc8debb4");
         TestStorageObject input = new TestStorageObject(uuid, "Summiner", 125.5);
 
         boolean success = manager.put(input).join();
@@ -37,7 +42,7 @@ public class LunethTest {
 
     @Test
     public void testNullKey() {
-        UUID randomId = UUID.randomUUID();
+        UUID randomId = UUID.fromString("c980d9db-5b01-4440-8d2d-e764cc8debb4");
         TestStorageObject result = manager.get(TestStorageObject.class, randomId).join();
         assertNull(result, "Getting a missing key should return null");
         System.out.println("Passed null key test");
@@ -45,7 +50,7 @@ public class LunethTest {
 
     @Test
     public void testNullValue() {
-        UUID randomId = UUID.randomUUID();
+        UUID randomId = UUID.fromString("c980d9db-5b01-4440-8d2d-e764cc8debb4");
         TestStorageObject result = manager.get(TestStorageObject.class, randomId).join();
         assertNull(result, "Getting a missing value should return null");
         System.out.println("Passed null value test");
@@ -53,7 +58,7 @@ public class LunethTest {
 
     @Test
     public void testRemovedObject() {
-        UUID randomId = UUID.randomUUID();
+        UUID randomId = UUID.fromString("c980d9db-5b01-4440-8d2d-e764cc8debb4");
         Boolean res1 = manager.put(new TestStorageObject(randomId, "RemovedObjectTest", 10.5)).join();
         assertEquals(true, res1, "Storing this object shouldn't error");
         System.out.println(manager.get(TestStorageObject.class, randomId).join());
